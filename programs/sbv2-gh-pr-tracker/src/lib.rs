@@ -1,7 +1,7 @@
 use anchor_lang::prelude::*;
 use switchboard_v2::AggregatorAccountData;
 
-declare_id!("Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS");
+declare_id!("6R5FUxyQMT2WbzXe1419Wy5qFc7Pd59xjiGeJB5rrM9d");
 
 fn compare_value(value: f64, threshold_value: f64, comparison_type: ComparisonType) -> bool {
     match comparison_type {
@@ -20,17 +20,20 @@ pub mod sbv2_gh_pr_tracker {
     pub fn initialize<'info>(
         ctx: Context<'_, '_, '_, 'info, InitializeTracker<'info>>,
         tracker_account_id: u32,
-        comparison_type: ComparisonType,
-        threshold_value: f64,
     ) -> Result<()> {
         let aggregator = ctx.accounts.aggregator.load()?;
         let val: f64 = aggregator.get_result()?.try_into()?;
+
+        let tracker = &mut ctx.accounts.tracker;
+        tracker.authority = ctx.accounts.authority.key();
+        tracker.comparison_type = ComparisonType::GreaterThan;
+        tracker.threshold_value = 1.5;
 
         msg!(
             "Created new tracker account with id: {}",
             tracker_account_id
         );
-        if compare_value(val, threshold_value, comparison_type) {
+        if compare_value(val, tracker.threshold_value, tracker.comparison_type) {
             msg!("\tThreshold value is passed");
         } else {
             msg!("\tThreshold value is not passed");
@@ -116,6 +119,7 @@ pub struct Tracker {
 }
 
 #[derive(AnchorSerialize, AnchorDeserialize, PartialEq, Copy, Clone)]
+#[repr(C)]
 pub enum ComparisonType {
     GreaterThanEqualTo,
     LessThanEqualTo,

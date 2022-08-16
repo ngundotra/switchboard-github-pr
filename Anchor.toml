@@ -2,7 +2,9 @@
 seeds = false
 skip-lint = false
 [programs.localnet]
-sbv2_gh_pr_tracker = "Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS"
+sbv2_gh_pr_tracker = "6R5FUxyQMT2WbzXe1419Wy5qFc7Pd59xjiGeJB5rrM9d"
+[programs.devnet]
+sbv2_gh_pr_tracker = "6R5FUxyQMT2WbzXe1419Wy5qFc7Pd59xjiGeJB5rrM9d"
 
 [registry]
 url = "https://api.apr.dev"
