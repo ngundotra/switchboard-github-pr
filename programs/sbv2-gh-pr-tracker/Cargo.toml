@@ -17,4 +17,4 @@ default = []
 
 [dependencies]
 anchor-lang = "0.25.0"
-switchboard-v2 = "0.1.14"
+switchboard-v2 = { version ="0.1.14", features = ["devnet"] }

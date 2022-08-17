@@ -47,7 +47,7 @@ pub mod sbv2_gh_pr_tracker {
     ) -> Result<()> {
         let aggregator = ctx.accounts.aggregator.load()?;
         let val = aggregator.get_result()?.try_into()?;
-        aggregator.check_staleness(Clock::get().unwrap().unix_timestamp, 300)?;
+        aggregator.check_staleness(Clock::get().unwrap().unix_timestamp, 3600)?;
 
         let tracker = &ctx.accounts.tracker;
         if !compare_value(val, tracker.threshold_value, tracker.comparison_type) {
@@ -85,6 +85,7 @@ pub struct InitializeTracker<'info> {
     )]
     pub tracker: Account<'info, Tracker>,
     /// CHECK: this account is neither read from nor written to
+    #[account(mut)]
     pub authority: Signer<'info>,
     // /// CHECK: unique per github pr issue
     pub aggregator: AccountLoader<'info, AggregatorAccountData>,
@@ -94,8 +95,6 @@ pub struct InitializeTracker<'info> {
 #[derive(Accounts)]
 #[instruction(tracker_account_id: u32)]
 pub struct VerifyTracker<'info> {
-    #[account(mut)]
-    pub payer: Signer<'info>,
     #[account(
         seeds=[
             authority.key().as_ref(),
@@ -106,7 +105,7 @@ pub struct VerifyTracker<'info> {
     )]
     pub tracker: Account<'info, Tracker>,
     /// CHECK: this account is neither read from nor written to
-    pub authority: Signer<'info>,
+    pub authority: AccountInfo<'info>,
     /// CHECK: unique per github pr issue
     pub aggregator: AccountLoader<'info, AggregatorAccountData>,
 }
